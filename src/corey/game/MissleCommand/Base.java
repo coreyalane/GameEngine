@@ -10,12 +10,19 @@ import corey.game.GameObject;
 
 public class Base extends GameObject {
 
-	public Base(String name, GameEngine gameEngine, Point2D location) {
+	public Base(String name, GameEngine gameEngine, Point2D location, int number) {
 		super(name, gameEngine, location, defaultHeight, defaultWidth);
+		this.number = number;
 	}
 
 	private static final double defaultWidth = .1;
 	private static final double defaultHeight = .05;
+	
+	private int number;
+	
+	public int getNumber() {
+		return number;
+	}
 	
 	@Override
 	public void draw() {

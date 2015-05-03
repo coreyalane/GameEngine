@@ -45,7 +45,13 @@ public class EnemyMissle extends GameObject {
 
 	@Override
 	public void onCollide(Collideable otherCollideable) {
-		gameEngine.removeGameObject(this);
+		if(otherCollideable instanceof Ground) {
+			gameEngine.removeGameObject(this);
+		}
+		else if(otherCollideable instanceof Base) {
+			gameEngine.removeGameObject(this);
+			((MissleCommandState)gameEngine.getProfile()).baseHit((Base)otherCollideable);
+		}
 	}
 
 	@Override
