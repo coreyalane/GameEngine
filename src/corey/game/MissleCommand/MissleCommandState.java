@@ -53,12 +53,18 @@ public class MissleCommandState extends GameState {
 		super.updatePreCollision(secondsSinceLastUpdate);
 		timeSinceStart += secondsSinceLastUpdate;
 		if(timeSinceStart > makeEnemyAtThisSecond) {
-			Random rng = new Random();
-			Point2D missleTargetLocation = baseStates.get(rng.nextInt(baseStates.size())).location;
-			double range = 1.5;
-			double missleStartX = rng.nextDouble()*range - (range/2);
-			gameEngine.addGameObject(new EnemyMissle("missle", gameEngine, new Point2D.Double(missleStartX, 1.0), missleTargetLocation));
-			makeEnemyAtThisSecond += 1.0;
+			launchNewEnemyMissle();
 		}
+	}
+
+	private void launchNewEnemyMissle() {
+		Random rng = new Random();
+		Point2D missleTargetLocation = baseStates.get(rng.nextInt(baseStates.size())).location;
+		double range = 1.5;
+		double missleStartX = rng.nextDouble()*range - (range/2);
+		gameEngine.addGameObject(new EnemyMissle("missle", gameEngine, new Point2D.Double(missleStartX, 1.0), missleTargetLocation));
+		double attackRate = 3.0;
+		double attackVariance = 1.0;
+		makeEnemyAtThisSecond += (attackRate + ((rng.nextDouble() - .5)*attackVariance)); 
 	}
 }
