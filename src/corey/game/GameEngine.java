@@ -228,6 +228,10 @@ public class GameEngine {
 		nextProfile = profile;
 	}
 	
+	public GameState getProfile() {
+		return currentProfile;
+	}
+	
 	public void sendSignal(SignalHandler from, String to, String message) {
 		if(currentProfile.getName() == to){
 			currentProfile.handleSignal(from, message);

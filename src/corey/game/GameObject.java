@@ -41,6 +41,16 @@ public abstract class GameObject implements Drawable, Translateable, Collideable
 	}
 	
 	@Override
+	public Point2D getLocation() {
+		if(proposedLocation != null){
+			return (Point2D)proposedLocation.clone();
+		}
+		else {
+			return (Point2D)location.clone();
+		}
+	}
+	
+	@Override
 	public void updatePreCollision(float secondsSinceLastUpdate) {
 		proposedLocation = (Point2D) location.clone();
 		translate(secondsSinceLastUpdate * velocity.x, secondsSinceLastUpdate * velocity.y);
