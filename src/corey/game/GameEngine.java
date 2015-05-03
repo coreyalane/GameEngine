@@ -42,6 +42,7 @@ import org.lwjgl.opengl.GLContext;
 
 public class GameEngine {
 	private ArrayList<GameObject> gameObjects = new ArrayList<GameObject>();
+	private ArrayList<GameObject> gameObjectsToRemove = new ArrayList<GameObject>();
 	private GameState currentProfile = null;
 	private GameState nextProfile = null;
     private GLFWErrorCallback errorCallback;
@@ -172,6 +173,10 @@ public class GameEngine {
 		gameObjects.add(gameObject);
 	}
 	
+	public void removeGameObject(GameObject toRemove) {
+		gameObjectsToRemove.add(toRemove);
+	}
+	
 	public void draw() {
 		for(Drawable drawable : gameObjects) {
 			if(drawable.isVisible()){
@@ -194,6 +199,7 @@ public class GameEngine {
 			currentProfile.setupState();
 			nextProfile = null;
 		}
+		currentProfile.updatePreCollision(secondsSinceLastUpdate);
 		for(Updateable updateable : gameObjects) {
 			updateable.updatePreCollision(secondsSinceLastUpdate);
 		}
@@ -208,9 +214,14 @@ public class GameEngine {
 				}
 			}
 		}
+		currentProfile.updatePostCollision();
 		for(Updateable updateable : gameObjects) {
 			updateable.updatePostCollision();
 		}
+		for(GameObject toRemove : gameObjectsToRemove) {
+			gameObjects.remove(toRemove);
+		}
+		gameObjectsToRemove.clear();
 	}
 	
 	public void setProfile(GameState profile) {

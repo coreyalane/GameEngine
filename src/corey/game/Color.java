@@ -16,4 +16,6 @@ public class Color {
 	public static final Color Red = new Color(1.0f, 0.0f, 0.0f);
 	public static final Color Green = new Color(0.0f, 1.0f, 0.0f);
 	public static final Color Black = new Color(0.0f, 0.0f, 0.0f);
+	public static final Color Yellow = new Color(1.0f, 1.0f, 0.0f);
+	public static final Color Brown = new Color(.7f, .2f, .05f);
 }

@@ -1,5 +1,7 @@
 package corey.game;
 
+import java.awt.geom.Point2D;
+
 public class Vector {
 	public Vector(double x, double y) {
 		this.x = x;
@@ -14,6 +16,10 @@ public class Vector {
 	
 	public static Vector FromPolar(double angle, double magnitude) {
 		return new Vector(1.0, 0.0).setMagnitude(magnitude).rotate(angle);
+	}
+	
+	public static Vector FromPoints(Point2D from, Point2D to) {
+		return new Vector(to.getX() - from.getX(), to.getY() - from.getY());
 	}
 	
 	public double x;
