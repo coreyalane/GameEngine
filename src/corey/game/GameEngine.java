@@ -14,6 +14,7 @@ import static org.lwjgl.glfw.GLFW.glfwMakeContextCurrent;
 import static org.lwjgl.glfw.GLFW.glfwPollEvents;
 import static org.lwjgl.glfw.GLFW.glfwSetErrorCallback;
 import static org.lwjgl.glfw.GLFW.glfwSetKeyCallback;
+import static org.lwjgl.glfw.GLFW.glfwSetMouseButtonCallback;
 import static org.lwjgl.glfw.GLFW.glfwSetWindowPos;
 import static org.lwjgl.glfw.GLFW.glfwSetWindowShouldClose;
 import static org.lwjgl.glfw.GLFW.glfwShowWindow;
@@ -22,6 +23,7 @@ import static org.lwjgl.glfw.GLFW.glfwSwapInterval;
 import static org.lwjgl.glfw.GLFW.glfwTerminate;
 import static org.lwjgl.glfw.GLFW.glfwWindowHint;
 import static org.lwjgl.glfw.GLFW.glfwWindowShouldClose;
+import static org.lwjgl.glfw.GLFW.glfwGetCursorPos;
 import static org.lwjgl.opengl.GL11.GL_COLOR_BUFFER_BIT;
 import static org.lwjgl.opengl.GL11.GL_DEPTH_BUFFER_BIT;
 import static org.lwjgl.opengl.GL11.GL_FALSE;
@@ -29,25 +31,36 @@ import static org.lwjgl.opengl.GL11.GL_TRUE;
 import static org.lwjgl.opengl.GL11.glClear;
 import static org.lwjgl.system.MemoryUtil.NULL;
 
+import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.nio.ByteBuffer;
+import java.nio.DoubleBuffer;
 import java.util.ArrayList;
 
+import org.lwjgl.BufferUtils;
 import org.lwjgl.glfw.GLFWErrorCallback;
 import org.lwjgl.glfw.GLFWKeyCallback;
+import org.lwjgl.glfw.GLFWMouseButtonCallback;
 import org.lwjgl.glfw.GLFWvidmode;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GLContext;
 
 
 public class GameEngine {
+	private static final int WIDTH = 900;
+    private static final int HEIGHT = 900;
+	
 	private ArrayList<GameObject> gameObjects = new ArrayList<GameObject>();
 	private ArrayList<GameObject> gameObjectsToRemove = new ArrayList<GameObject>();
 	private GameState currentProfile = null;
 	private GameState nextProfile = null;
     private GLFWErrorCallback errorCallback;
     private GLFWKeyCallback   keyCallback;
+    private GLFWMouseButtonCallback mouseButtonCallback;
     private long window;
+    private DoubleBuffer mouseXBuffer = BufferUtils.createDoubleBuffer(1);
+    private DoubleBuffer mouseYBuffer = BufferUtils.createDoubleBuffer(1);
+    private Point2D mousePosition = new Point2D.Double();
 	
 	private void init(GameState initialGameState) {
         // Setup an error callback. The default implementation
@@ -62,9 +75,6 @@ public class GameEngine {
         glfwDefaultWindowHints(); // optional, the current window hints are already the default
         glfwWindowHint(GLFW_VISIBLE, GL_FALSE); // the window will stay hidden after creation
         glfwWindowHint(GLFW_RESIZABLE, GL_TRUE); // the window will be resizable
- 
-        int WIDTH = 900;
-        int HEIGHT = 900;
  
         // Create the window
         window = glfwCreateWindow(WIDTH, HEIGHT, "Hello World!", NULL, NULL);
@@ -81,7 +91,14 @@ public class GameEngine {
                 sendInputs(window, key, scancode, action, mods);;
             }
         });
- 
+        
+        glfwSetMouseButtonCallback(window, mouseButtonCallback = new GLFWMouseButtonCallback() {
+        	@Override
+        	public void invoke(long window, int button, int action, int mods) {
+        		sendInputs(window, button, 0, action, mods);
+        	}
+        });
+        
         // Get the resolution of the primary monitor
         ByteBuffer vidmode = glfwGetVideoMode(glfwGetPrimaryMonitor());
         // Center our window
@@ -119,22 +136,32 @@ public class GameEngine {
 		GL11.glMatrixMode(GL11.GL_PROJECTION);
 		GL11.glLoadIdentity();
 		GL11.glOrtho(-1, 1, -1, 1, 1, -1);
-		//GL11.glOrtho(0, WIDTH, HEIGHT, 0, 1, -1);
 		GL11.glMatrixMode(GL11.GL_MODELVIEW);
 		
 		 initializeGameState(initialGameState);
     }
+	
+	private void cacheMousePosition() {
+		glfwGetCursorPos(window, mouseXBuffer, mouseYBuffer);
+		double adjustedX = (mouseXBuffer.get(0) / WIDTH * 2.0) - 1.0;
+		double adjustedY = -((mouseYBuffer.get(0) / HEIGHT * 2.0) - 1.0);
+		mousePosition = new Point2D.Double(adjustedX, adjustedY);
+	}
+	
+	public Point2D getMousePosition() {
+		return (Point2D)mousePosition.clone();
+	}
 	
 	public void run(GameState initialGameState) {
         try {
             init(initialGameState);
             loop();
  
-            // Release window and window callbacks
+            
+        } finally {
             glfwDestroyWindow(window);
             keyCallback.release();
-        } finally {
-            // Terminate GLFW and release the GLFWerrorfun
+            mouseButtonCallback.release();
             glfwTerminate();
             errorCallback.release();
         }
@@ -147,13 +174,12 @@ public class GameEngine {
         while ( glfwWindowShouldClose(window) == GL_FALSE ) {
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // clear the framebuffer
             long thisUpdateTime = getTimeMilliseconds();
+        	glfwPollEvents();
+            cacheMousePosition();
             update(getDelta(lastUpdateTime, thisUpdateTime));
             lastUpdateTime = thisUpdateTime;
             draw();           
-            glfwSwapBuffers(window); // swap the color buffers
-            // Poll for window events. The key callback above will only be
-            // invoked during this call.
-            glfwPollEvents();
+            glfwSwapBuffers(window);
         }
     }
 	

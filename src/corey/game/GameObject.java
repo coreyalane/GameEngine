@@ -140,4 +140,13 @@ public abstract class GameObject implements Drawable, Translateable, Collideable
 	public void revertCollision() {
 		proposedLocation = (Point2D) location.clone();
 	}
+	
+	@Override
+	public void onCollide(Collideable otherCollideable) {}
+	
+	@Override
+	public void onInput(long window, int key, int scancode, int action, int mods) {}
+	
+	@Override
+	public void draw() {}
 }

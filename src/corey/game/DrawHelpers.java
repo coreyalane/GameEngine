@@ -33,4 +33,9 @@ public class DrawHelpers {
 	    GL11.glVertex2d(end.getX(), end.getY());
 	    GL11.glEnd();
 	}
+	
+	public static void drawX(Rectangle2D boundingBox, Color color) {
+		drawLine(RectangleHelpers.UL(boundingBox), RectangleHelpers.LR(boundingBox), color);
+		drawLine(RectangleHelpers.UR(boundingBox), RectangleHelpers.LL(boundingBox), color);
+	}
 }
