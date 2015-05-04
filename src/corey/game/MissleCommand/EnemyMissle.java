@@ -1,11 +1,8 @@
 package corey.game.MissleCommand;
 
 import java.awt.geom.Point2D;
-import java.util.Random;
 
 import corey.game.Collideable;
-import corey.game.Color;
-import corey.game.DrawHelpers;
 import corey.game.GameEngine;
 import corey.game.GameObject;
 import corey.game.Vector;
@@ -26,21 +23,7 @@ public class EnemyMissle extends GameObject {
 	
 	@Override
 	public void draw() {
-		Color tipColor = Color.White;
-		Random rng = new Random();
-		switch(rng.nextInt(3)) {
-		case 0:
-			tipColor = Color.Red;
-			break;
-		case 1:
-			tipColor = Color.Yellow;
-			break;
-		case 2:
-			tipColor = Color.White;
-			break;
-		}
-		DrawHelpers.drawBoundingBox(getBoundingBox(), tipColor);
-		DrawHelpers.drawLine(initialLocation, location, Color.Red);
+		MissleCommandDrawHelpers.drawMissle(getBoundingBox(), initialLocation, location);
 	}
 
 	@Override
@@ -53,11 +36,4 @@ public class EnemyMissle extends GameObject {
 			((MissleCommandState)gameEngine.getProfile()).baseHit((Base)otherCollideable);
 		}
 	}
-
-	@Override
-	public void onInput(long window, int key, int scancode, int action, int mods) {
-		// TODO Auto-generated method stub
-
-	}
-
 }

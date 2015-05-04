@@ -4,6 +4,8 @@ import java.awt.geom.Point2D;
 import java.util.ArrayList;
 import java.util.Random;
 
+import static org.lwjgl.glfw.GLFW.*;
+
 import corey.game.GameEngine;
 import corey.game.GameState;
 
@@ -69,5 +71,36 @@ public class MissleCommandState extends GameState {
 	public void baseHit(Base base) {
 		gameEngine.removeGameObject(base);
 		baseStates.remove(base);
+	}
+	
+	@Override
+	public void onInput(long window, int key, int scancode, int action, int mods) {
+		super.onInput(window, key, scancode, action, mods);
+		if((key == GLFW_MOUSE_BUTTON_LEFT) && (action == GLFW_PRESS)) {
+			launchPlayerMissle();
+		}
+	}
+
+	private void launchPlayerMissle() {
+		if(!baseStates.isEmpty()){
+			Point2D mousePosition = gameEngine.getMousePosition();
+			Point2D baseToFireFrom = getBaseToFireFrom(mousePosition);
+			gameEngine.addGameObject(new PlayerMissle("playerMissle", gameEngine, baseToFireFrom, mousePosition));
+		}
+	}
+
+	private Point2D getBaseToFireFrom(Point2D mousePosition) {
+		Point2D baseToFireFrom = null;
+		for(Base base : baseStates) {
+			if(baseToFireFrom == null){
+				baseToFireFrom = base.getLocation();
+			}
+			else {
+				if(base.getLocation().distance(mousePosition) < baseToFireFrom.distance(mousePosition)) {
+					baseToFireFrom = base.getLocation();
+				}
+			}
+		}
+		return baseToFireFrom;
 	}
 }
