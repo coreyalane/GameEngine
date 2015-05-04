@@ -37,6 +37,7 @@ public class PlayerMissle extends GameObject {
 		double distanceForExplosion = velocity.magnitude() / 2.0 * secondsSinceLastUpdate;
 		if(location.distance(targetLocation) < distanceForExplosion) {
 			gameEngine.removeGameObject(this);
+			gameEngine.addGameObject(new Explosion("explosion", gameEngine, location));
 		}
 	}
 }
