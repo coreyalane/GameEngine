@@ -51,6 +51,7 @@ public class GameEngine {
     private static final int HEIGHT = 900;
 	
 	private ArrayList<GameObject> gameObjects = new ArrayList<GameObject>();
+	private ArrayList<GameObject> gameObjectsToAdd = new ArrayList<GameObject>();
 	private ArrayList<GameObject> gameObjectsToRemove = new ArrayList<GameObject>();
 	private GameState currentProfile = null;
 	private GameState nextProfile = null;
@@ -196,7 +197,7 @@ public class GameEngine {
     }
 	
 	public void addGameObject(GameObject gameObject) {
-		gameObjects.add(gameObject);
+		gameObjectsToAdd.add(gameObject);
 	}
 	
 	public void removeGameObject(GameObject toRemove) {
@@ -225,6 +226,10 @@ public class GameEngine {
 			currentProfile.setupState();
 			nextProfile = null;
 		}
+		for(GameObject toAdd : gameObjectsToAdd) {
+			gameObjects.add(toAdd);
+		}
+		gameObjectsToAdd.clear();
 		currentProfile.updatePreCollision(secondsSinceLastUpdate);
 		for(Updateable updateable : gameObjects) {
 			updateable.updatePreCollision(secondsSinceLastUpdate);

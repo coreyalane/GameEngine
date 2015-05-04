@@ -24,6 +24,7 @@ public abstract class GameObject implements Drawable, Translateable, Collideable
 	protected double height;
 	protected double width; 
 	protected Vector velocity = Vector.Zero();
+	protected double lifespan = 0.0;
 	
 	@Override
 	public void setVisability(boolean isVisible) {
@@ -52,6 +53,7 @@ public abstract class GameObject implements Drawable, Translateable, Collideable
 	
 	@Override
 	public void updatePreCollision(float secondsSinceLastUpdate) {
+		lifespan += secondsSinceLastUpdate;
 		proposedLocation = (Point2D) location.clone();
 		translate(secondsSinceLastUpdate * velocity.x, secondsSinceLastUpdate * velocity.y);
 	}
@@ -59,6 +61,11 @@ public abstract class GameObject implements Drawable, Translateable, Collideable
 	@Override
 	public void updatePostCollision() {
 		location = (Point2D) proposedLocation.clone();	
+	}
+	
+	@Override
+	public double getLifespan() {
+		return lifespan;
 	}
 	
 	@Override
