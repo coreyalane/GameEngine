@@ -8,6 +8,14 @@ public abstract class GameState implements SignalHandler, InputReceiver, Updatea
 	protected GameEngine gameEngine; 
 	protected double lifespan = 0.0;
 	
+	public int gameWidth() {
+		return 900;
+	}
+	
+	public int gameHeight() {
+		return 900;
+	}
+	
 	public void setupState() {}
 	
 	@Override

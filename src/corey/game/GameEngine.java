@@ -47,9 +47,10 @@ import org.lwjgl.opengl.GLContext;
 
 
 public class GameEngine {
-	private static final int WIDTH = 900;
-    private static final int HEIGHT = 900;
+	private static int WIDTH = 900;
+    private static int HEIGHT = 900;
 	
+    private boolean collisionsEnabled = true;
 	private ArrayList<GameObject> gameObjects = new ArrayList<GameObject>();
 	private ArrayList<GameObject> gameObjectsToAdd = new ArrayList<GameObject>();
 	private ArrayList<GameObject> gameObjectsToRemove = new ArrayList<GameObject>();
@@ -63,7 +64,14 @@ public class GameEngine {
     private DoubleBuffer mouseYBuffer = BufferUtils.createDoubleBuffer(1);
     private Point2D mousePosition = new Point2D.Double();
 	
+    public void enableCollisions(boolean enabled) {
+    	collisionsEnabled = enabled;
+    }
+    
 	private void init(GameState initialGameState) {
+		WIDTH = initialGameState.gameWidth();
+		HEIGHT = initialGameState.gameHeight();
+		
         // Setup an error callback. The default implementation
         // will print the error message in System.err.
         glfwSetErrorCallback(errorCallback = errorCallbackPrint(System.err));
@@ -234,13 +242,15 @@ public class GameEngine {
 		for(Updateable updateable : gameObjects) {
 			updateable.updatePreCollision(secondsSinceLastUpdate);
 		}
-		for(Collideable collideable : gameObjects) {
-			for(Collideable otherCollideable : gameObjects) {
-				if(!collideable.equals(otherCollideable)) {
-					Rectangle2D collideableRect = collideable.getBoundingBox();
-					Rectangle2D otherCollideableRect = otherCollideable.getBoundingBox();
-					if(collideableRect.intersects(otherCollideableRect)) {
-						collideable.onCollide(otherCollideable);
+		if(collisionsEnabled) {
+			for(Collideable collideable : gameObjects) {
+				for(Collideable otherCollideable : gameObjects) {
+					if(!collideable.equals(otherCollideable)) {
+						Rectangle2D collideableRect = collideable.getBoundingBox();
+						Rectangle2D otherCollideableRect = otherCollideable.getBoundingBox();
+						if(collideableRect.intersects(otherCollideableRect)) {
+							collideable.onCollide(otherCollideable);
+						}
 					}
 				}
 			}
